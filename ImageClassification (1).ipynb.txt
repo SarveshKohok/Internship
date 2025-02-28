@@ -1,0 +1,571 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "pip install gradio"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "collapsed": true,
+        "id": "zDDpEyaKHbw7",
+        "outputId": "ff3db3d2-c2da-4bdc-c53c-f4f738a4c7b3"
+      },
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting gradio\n",
+            "  Downloading gradio-5.9.1-py3-none-any.whl.metadata (16 kB)\n",
+            "Collecting aiofiles<24.0,>=22.0 (from gradio)\n",
+            "  Downloading aiofiles-23.2.1-py3-none-any.whl.metadata (9.7 kB)\n",
+            "Requirement already satisfied: anyio<5.0,>=3.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (3.7.1)\n",
+            "Collecting fastapi<1.0,>=0.115.2 (from gradio)\n",
+            "  Downloading fastapi-0.115.6-py3-none-any.whl.metadata (27 kB)\n",
+            "Collecting ffmpy (from gradio)\n",
+            "  Downloading ffmpy-0.5.0-py3-none-any.whl.metadata (3.0 kB)\n",
+            "Collecting gradio-client==1.5.2 (from gradio)\n",
+            "  Downloading gradio_client-1.5.2-py3-none-any.whl.metadata (7.1 kB)\n",
+            "Requirement already satisfied: httpx>=0.24.1 in /usr/local/lib/python3.10/dist-packages (from gradio) (0.28.1)\n",
+            "Requirement already satisfied: huggingface-hub>=0.25.1 in /usr/local/lib/python3.10/dist-packages (from gradio) (0.27.0)\n",
+            "Requirement already satisfied: jinja2<4.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (3.1.4)\n",
+            "Collecting markupsafe~=2.0 (from gradio)\n",
+            "  Downloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.0 kB)\n",
+            "Requirement already satisfied: numpy<3.0,>=1.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (1.26.4)\n",
+            "Requirement already satisfied: orjson~=3.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (3.10.12)\n",
+            "Requirement already satisfied: packaging in /usr/local/lib/python3.10/dist-packages (from gradio) (24.2)\n",
+            "Requirement already satisfied: pandas<3.0,>=1.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (2.2.2)\n",
+            "Requirement already satisfied: pillow<12.0,>=8.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (11.0.0)\n",
+            "Requirement already satisfied: pydantic>=2.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (2.10.3)\n",
+            "Collecting pydub (from gradio)\n",
+            "  Downloading pydub-0.25.1-py2.py3-none-any.whl.metadata (1.4 kB)\n",
+            "Collecting python-multipart>=0.0.18 (from gradio)\n",
+            "  Downloading python_multipart-0.0.20-py3-none-any.whl.metadata (1.8 kB)\n",
+            "Requirement already satisfied: pyyaml<7.0,>=5.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (6.0.2)\n",
+            "Collecting ruff>=0.2.2 (from gradio)\n",
+            "  Downloading ruff-0.8.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (25 kB)\n",
+            "Collecting safehttpx<0.2.0,>=0.1.6 (from gradio)\n",
+            "  Downloading safehttpx-0.1.6-py3-none-any.whl.metadata (4.2 kB)\n",
+            "Collecting semantic-version~=2.0 (from gradio)\n",
+            "  Downloading semantic_version-2.10.0-py2.py3-none-any.whl.metadata (9.7 kB)\n",
+            "Collecting starlette<1.0,>=0.40.0 (from gradio)\n",
+            "  Downloading starlette-0.45.1-py3-none-any.whl.metadata (6.3 kB)\n",
+            "Collecting tomlkit<0.14.0,>=0.12.0 (from gradio)\n",
+            "  Downloading tomlkit-0.13.2-py3-none-any.whl.metadata (2.7 kB)\n",
+            "Requirement already satisfied: typer<1.0,>=0.12 in /usr/local/lib/python3.10/dist-packages (from gradio) (0.15.1)\n",
+            "Requirement already satisfied: typing-extensions~=4.0 in /usr/local/lib/python3.10/dist-packages (from gradio) (4.12.2)\n",
+            "Collecting uvicorn>=0.14.0 (from gradio)\n",
+            "  Downloading uvicorn-0.34.0-py3-none-any.whl.metadata (6.5 kB)\n",
+            "Requirement already satisfied: fsspec in /usr/local/lib/python3.10/dist-packages (from gradio-client==1.5.2->gradio) (2024.10.0)\n",
+            "Requirement already satisfied: websockets<15.0,>=10.0 in /usr/local/lib/python3.10/dist-packages (from gradio-client==1.5.2->gradio) (14.1)\n",
+            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (3.10)\n",
+            "Requirement already satisfied: sniffio>=1.1 in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (1.3.1)\n",
+            "Requirement already satisfied: exceptiongroup in /usr/local/lib/python3.10/dist-packages (from anyio<5.0,>=3.0->gradio) (1.2.2)\n",
+            "Collecting starlette<1.0,>=0.40.0 (from gradio)\n",
+            "  Downloading starlette-0.41.3-py3-none-any.whl.metadata (6.0 kB)\n",
+            "Requirement already satisfied: certifi in /usr/local/lib/python3.10/dist-packages (from httpx>=0.24.1->gradio) (2024.12.14)\n",
+            "Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.10/dist-packages (from httpx>=0.24.1->gradio) (1.0.7)\n",
+            "Requirement already satisfied: h11<0.15,>=0.13 in /usr/local/lib/python3.10/dist-packages (from httpcore==1.*->httpx>=0.24.1->gradio) (0.14.0)\n",
+            "Requirement already satisfied: filelock in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (3.16.1)\n",
+            "Requirement already satisfied: requests in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (2.32.3)\n",
+            "Requirement already satisfied: tqdm>=4.42.1 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub>=0.25.1->gradio) (4.67.1)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2.8.2)\n",
+            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2024.2)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.10/dist-packages (from pandas<3.0,>=1.0->gradio) (2024.2)\n",
+            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.10/dist-packages (from pydantic>=2.0->gradio) (0.7.0)\n",
+            "Requirement already satisfied: pydantic-core==2.27.1 in /usr/local/lib/python3.10/dist-packages (from pydantic>=2.0->gradio) (2.27.1)\n",
+            "Requirement already satisfied: click>=8.0.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (8.1.7)\n",
+            "Requirement already satisfied: shellingham>=1.3.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (1.5.4)\n",
+            "Requirement already satisfied: rich>=10.11.0 in /usr/local/lib/python3.10/dist-packages (from typer<1.0,>=0.12->gradio) (13.9.4)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.10/dist-packages (from python-dateutil>=2.8.2->pandas<3.0,>=1.0->gradio) (1.17.0)\n",
+            "Requirement already satisfied: markdown-it-py>=2.2.0 in /usr/local/lib/python3.10/dist-packages (from rich>=10.11.0->typer<1.0,>=0.12->gradio) (3.0.0)\n",
+            "Requirement already satisfied: pygments<3.0.0,>=2.13.0 in /usr/local/lib/python3.10/dist-packages (from rich>=10.11.0->typer<1.0,>=0.12->gradio) (2.18.0)\n",
+            "Requirement already satisfied: charset-normalizer<4,>=2 in /usr/local/lib/python3.10/dist-packages (from requests->huggingface-hub>=0.25.1->gradio) (3.4.0)\n",
+            "Requirement already satisfied: urllib3<3,>=1.21.1 in /usr/local/lib/python3.10/dist-packages (from requests->huggingface-hub>=0.25.1->gradio) (2.2.3)\n",
+            "Requirement already satisfied: mdurl~=0.1 in /usr/local/lib/python3.10/dist-packages (from markdown-it-py>=2.2.0->rich>=10.11.0->typer<1.0,>=0.12->gradio) (0.1.2)\n",
+            "Downloading gradio-5.9.1-py3-none-any.whl (57.2 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m57.2/57.2 MB\u001b[0m \u001b[31m12.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading gradio_client-1.5.2-py3-none-any.whl (320 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m320.4/320.4 kB\u001b[0m \u001b[31m19.4 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading aiofiles-23.2.1-py3-none-any.whl (15 kB)\n",
+            "Downloading fastapi-0.115.6-py3-none-any.whl (94 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m94.8/94.8 kB\u001b[0m \u001b[31m7.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (25 kB)\n",
+            "Downloading python_multipart-0.0.20-py3-none-any.whl (24 kB)\n",
+            "Downloading ruff-0.8.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (11.2 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m11.2/11.2 MB\u001b[0m \u001b[31m74.1 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading safehttpx-0.1.6-py3-none-any.whl (8.7 kB)\n",
+            "Downloading semantic_version-2.10.0-py2.py3-none-any.whl (15 kB)\n",
+            "Downloading starlette-0.41.3-py3-none-any.whl (73 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m73.2/73.2 kB\u001b[0m \u001b[31m5.8 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading tomlkit-0.13.2-py3-none-any.whl (37 kB)\n",
+            "Downloading uvicorn-0.34.0-py3-none-any.whl (62 kB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m62.3/62.3 kB\u001b[0m \u001b[31m5.0 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading ffmpy-0.5.0-py3-none-any.whl (6.0 kB)\n",
+            "Downloading pydub-0.25.1-py2.py3-none-any.whl (32 kB)\n",
+            "Installing collected packages: pydub, uvicorn, tomlkit, semantic-version, ruff, python-multipart, markupsafe, ffmpy, aiofiles, starlette, safehttpx, gradio-client, fastapi, gradio\n",
+            "  Attempting uninstall: markupsafe\n",
+            "    Found existing installation: MarkupSafe 3.0.2\n",
+            "    Uninstalling MarkupSafe-3.0.2:\n",
+            "      Successfully uninstalled MarkupSafe-3.0.2\n",
+            "Successfully installed aiofiles-23.2.1 fastapi-0.115.6 ffmpy-0.5.0 gradio-5.9.1 gradio-client-1.5.2 markupsafe-2.1.5 pydub-0.25.1 python-multipart-0.0.20 ruff-0.8.4 safehttpx-0.1.6 semantic-version-2.10.0 starlette-0.41.3 tomlkit-0.13.2 uvicorn-0.34.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "**CONVOLUTIONAL NEURAL NETWORK(CNN)**\n",
+        "\n",
+        "*   Hidden Layer\n",
+        "*   Convolutional Layer[2D]\n",
+        "*   Pooling Layer\n",
+        "*   Flatten\n",
+        "*   Dense(fully convolutional)\n",
+        "*   Dense(o/p)\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "KwyMXvcKFkJw"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import os\n",
+        "import numpy as np\n",
+        "import pandas as pd\n",
+        "import matplotlib.pyplot as plt\n",
+        "import tensorflow as tf\n",
+        "from tensorflow.keras.models import Sequential\n",
+        "from tensorflow.keras.layers import Dense,Conv2D,Flatten\n",
+        "from tensorflow.keras.preprocessing import image\n",
+        "import gradio as gr"
+      ],
+      "metadata": {
+        "id": "zhaAMijcGKWt"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from PIL import Image"
+      ],
+      "metadata": {
+        "id": "liJ2qaV5hWxX"
+      },
+      "execution_count": 32,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "url='https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip'\n",
+        "cat_dog_file_path=os.path.join(os.getcwd(),'cats_and_dogs_filtered.zip')\n",
+        "cat_dog_file_path"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 36
+        },
+        "id": "b-5xLQSlHCPX",
+        "outputId": "96c05af2-9e41-4960-f2f5-d88ee318b2cd"
+      },
+      "execution_count": 3,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'/content/cats_and_dogs_filtered.zip'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 3
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "os.makedirs('Data', exist_ok=True)\n",
+        "cat_dog_file_path = os.path.join(os.getcwd(), 'Data', 'cats_and_dogs_filtered.zip')"
+      ],
+      "metadata": {
+        "id": "G92YGb8CeM4e"
+      },
+      "execution_count": 18,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import urllib.request\n",
+        "import zipfile"
+      ],
+      "metadata": {
+        "id": "kPStD2FRIrRN"
+      },
+      "execution_count": 19,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "urllib.request.urlretrieve(url,cat_dog_file_path)\n",
+        "with zipfile.ZipFile(cat_dog_file_path,'r') as zip_ref:\n",
+        "  zip_ref.extractall(os.path.join(os.getcwd(),'Data'))"
+      ],
+      "metadata": {
+        "id": "wbxL4EpNI7_p"
+      },
+      "execution_count": 20,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cat_dog_file_path"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 36
+        },
+        "id": "uDtEUjS5MGlG",
+        "outputId": "82826070-c869-4077-9250-559385c7ee32"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'/content/Data/cats_and_dogs_filtered.zip'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 21
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "main_dir=os.path.join(os.getcwd(),'content')"
+      ],
+      "metadata": {
+        "id": "o3Hawi_OMrL_"
+      },
+      "execution_count": 22,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_folder = os.path.join(os.getcwd(), 'Data', 'cats_and_dogs_filtered', 'train')\n",
+        "test_folder= os.path.join(os.getcwd(), 'Data', 'cats_and_dogs_filtered', 'validation')"
+      ],
+      "metadata": {
+        "id": "JtHln4Nk4BDm"
+      },
+      "execution_count": 23,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#train_folder=os.path.join(main_dir,'train')\n",
+        "#test_folder=os.path.join(main_dir,'validation')"
+      ],
+      "metadata": {
+        "id": "z9CoB5WoNHo_"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "Now for better accuracy and classification,we'll use convolutional neural network"
+      ],
+      "metadata": {
+        "id": "f0a-lSZkOOSm"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CDC=tf.keras.models.Sequential([\n",
+        "    tf.keras.layers.Conv2D(8,(3,3),activation='relu',input_shape=(200,200,3)),\n",
+        "    tf.keras.layers.MaxPooling2D(2,2),\n",
+        "    tf.keras.layers.Conv2D(16,(3,3),activation='relu',input_shape=(200,200,3)),\n",
+        "    tf.keras.layers.MaxPooling2D(2,2),\n",
+        "    tf.keras.layers.Conv2D(32,(3,3),activation='relu',input_shape=(200,200,3)),\n",
+        "    tf.keras.layers.MaxPooling2D(2,2),\n",
+        "    tf.keras.layers.Flatten(),\n",
+        "    tf.keras.layers.Dense(500,activation='relu'),\n",
+        "    tf.keras.layers.Dense(1,activation='sigmoid')]\n",
+        ")"
+      ],
+      "metadata": {
+        "id": "_o_yIa2qOCPh",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "de6c8a3c-7c8b-4ae6-8a9c-b5b9bb572bae"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.10/dist-packages/keras/src/layers/convolutional/base_conv.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.\n",
+            "  super().__init__(activity_regularizer=activity_regularizer, **kwargs)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "CDC.compile(optimizer=tf.keras.optimizers.RMSprop(learning_rate=0.001),loss='binary_crossentropy',metrics=['accuracy'])"
+      ],
+      "metadata": {
+        "id": "vMlRbcalVbIw"
+      },
+      "execution_count": 25,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_gen = image.ImageDataGenerator(rescale= 1. / 255)\n",
+        "test_gen = image.ImageDataGenerator(rescale= 1. / 255)\n"
+      ],
+      "metadata": {
+        "id": "NivaRcWvXAAW"
+      },
+      "execution_count": 26,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "train_dgen = train_gen.flow_from_directory(\n",
+        "    train_folder,\n",
+        "    class_mode='binary',\n",
+        "    target_size=(200,200),\n",
+        "    batch_size=32\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "cAqMAup4yWPB",
+        "outputId": "8eaa5c6a-637a-4644-85b8-422096be900f"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 2000 images belonging to 2 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "test_dgen = test_gen.flow_from_directory(\n",
+        "    test_folder,\n",
+        "    class_mode='binary',\n",
+        "    target_size=(200,200),\n",
+        "    batch_size=32\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "VlwVToT9ykKj",
+        "outputId": "5f503763-2918-4921-bb88-e8436249d661"
+      },
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Found 1000 images belonging to 2 classes.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "Trained_CDC = CDC.fit(\n",
+        "    train_dgen,\n",
+        "    validation_data=test_dgen,\n",
+        "    epochs=5,\n",
+        "    steps_per_epoch=90,\n",
+        "    verbose=2,\n",
+        "    validation_steps = 50\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "jtRNWX7vynGS",
+        "outputId": "6eefe826-73bd-4aef-bfa6-0df67200e868"
+      },
+      "execution_count": 29,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Epoch 1/5\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.10/dist-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py:122: UserWarning: Your `PyDataset` class should call `super().__init__(**kwargs)` in its constructor. `**kwargs` can include `workers`, `use_multiprocessing`, `max_queue_size`. Do not pass these arguments to `fit()`, as they will be ignored.\n",
+            "  self._warn_if_super_not_called()\n",
+            "/usr/lib/python3.10/contextlib.py:153: UserWarning: Your input ran out of data; interrupting training. Make sure that your dataset or generator can generate at least `steps_per_epoch * epochs` batches. You may need to use the `.repeat()` function when building your dataset.\n",
+            "  self.gen.throw(typ, value, traceback)\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "90/90 - 60s - 666ms/step - accuracy: 0.5150 - loss: 0.8083 - val_accuracy: 0.5860 - val_loss: 0.6717\n",
+            "Epoch 2/5\n",
+            "90/90 - 85s - 950ms/step - accuracy: 0.5840 - loss: 0.6798 - val_accuracy: 0.6260 - val_loss: 0.6607\n",
+            "Epoch 3/5\n",
+            "90/90 - 59s - 651ms/step - accuracy: 0.6300 - loss: 0.6335 - val_accuracy: 0.6600 - val_loss: 0.6139\n",
+            "Epoch 4/5\n",
+            "90/90 - 82s - 907ms/step - accuracy: 0.7135 - loss: 0.5865 - val_accuracy: 0.7000 - val_loss: 0.5775\n",
+            "Epoch 5/5\n",
+            "90/90 - 82s - 907ms/step - accuracy: 0.7480 - loss: 0.5238 - val_accuracy: 0.6820 - val_loss: 0.5845\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "def c_d_id(i):\n",
+        "  i = i.resize((200,200),resample=Image.Resampling.BILINEAR)\n",
+        "  i_arr = image.img_to_array(i)\n",
+        "  i_arr = np.expand_dims(i_arr, axis=0)\n",
+        "  i_arr = i_arr / 255.0\n",
+        "  pred = CDC.predict(i_arr)\n",
+        "  if pred[0] > 0.5:\n",
+        "    return 'The Image is identified as Dog'\n",
+        "  else:\n",
+        "    return 'The Image is identified as Cat'\n"
+      ],
+      "metadata": {
+        "id": "ozUo4rZvywv2"
+      },
+      "execution_count": 34,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cat_dog_ID = gr.Interface(\n",
+        "    fn=c_d_id,\n",
+        "    inputs=gr.Image(type='pil'),\n",
+        "    outputs=gr.Text(),\n",
+        "    title='Cat Dog Classifier',\n",
+        "    live=True\n",
+        ")\n",
+        "\n",
+        "cat_dog_ID.launch()"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 646
+        },
+        "id": "ZDt_g5cFzDye",
+        "outputId": "80a090b8-aad0-4fa7-9b76-676528027468"
+      },
+      "execution_count": 35,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Running Gradio in a Colab notebook requires sharing enabled. Automatically setting `share=True` (you can turn this off by setting `share=False` in `launch()` explicitly).\n",
+            "\n",
+            "Colab notebook detected. To show errors in colab notebook, set debug=True in launch()\n",
+            "* Running on public URL: https://c2bbaccf576912b3b2.gradio.live\n",
+            "\n",
+            "This share link expires in 72 hours. For free permanent hosting and GPU upgrades, run `gradio deploy` from the terminal in the working directory to deploy to Hugging Face Spaces (https://huggingface.co/spaces)\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "<div><iframe src=\"https://c2bbaccf576912b3b2.gradio.live\" width=\"100%\" height=\"500\" allow=\"autoplay; camera; microphone; clipboard-read; clipboard-write;\" frameborder=\"0\" allowfullscreen></iframe></div>"
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": []
+          },
+          "metadata": {},
+          "execution_count": 35
+        }
+      ]
+    }
+  ]
+}
